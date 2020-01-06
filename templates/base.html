@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ title or 'APPs Bottle'}}</title>
     <link rel="stylesheet" href="bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="custon.css" type="text/css">
+    {% block link %}
+    {% endblock %}
 </head>
 <body>
     <div class="container">
-        {{ !base }}
+        {% block base %} {% endblock %}
     </div>
 </body>
 </html>

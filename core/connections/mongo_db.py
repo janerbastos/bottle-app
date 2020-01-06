@@ -18,5 +18,5 @@ class Database(metaclass=MetaConnect):
 
     def connect(self):
         if self.connection is None:
-            self.connection = MongoClient('localhost', 27017)
+            self.connection = MongoClient('192.168.99.100', 27017)
         return self.connection

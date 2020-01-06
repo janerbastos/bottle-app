@@ -1,9 +1,14 @@
-% rebase('base.html', title='Pagina de login')
-
+{% extends 'base.html' %}
+{% block link %}
+<link rel="stylesheet" href="custon.css" type="text/css">
+{% endblock %}
+{% block base %}
 <div id="login">
-  % if acesso=='False':
-  <h3 class="text-center text-white pt-5">Acesso Negado</h3>
-  % end
+  {% if message %}
+  <div class="alert alert-success" role="alert">
+    {{ message }}
+  </div>
+  {% endif %}
   <div class="container">
     <div id="login-row" class="row justify-content-center align-items-center">
       <div id="login-column" class="col-md-6">
@@ -35,11 +40,11 @@
                 type="submit"
                 name="submit"
                 class="btn btn-info btn-md"
-                value="submit"
+                value="Entrar"
               />
             </div>
             <div id="register-link" class="text-right">
-              <a href="#" class="text-info">Register here</a>
+              <a href="/register" class="text-info">Register here</a>
             </div>
           </form>
         </div>
@@ -47,3 +52,4 @@
     </div>
   </div>
 </div>
+{% endblock %}
