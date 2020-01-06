@@ -53,7 +53,7 @@ def do_register():
     if usuario_exist:
         return {'message': 'Usuário exite.', 'code': 'danger'}
     password = str.encode(request.forms.get('password'))
-    salt = bcrypt.gensalt()
+    salt = bcrypt.gensalt(8)
     data = {
         'username': username,
         'hashed': bcrypt.hashpw(password, salt),
