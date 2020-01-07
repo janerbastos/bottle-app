@@ -1,8 +1,10 @@
 import bcrypt
 from core import app, views
+from core.forms.validate.form import required_field
 from bottle import redirect, request
 from bson.json_util import dumps
 from login.models.auth import User
+from bottle_utils.csrf import csrf_protect, csrf_token, csrf_tag
 # from core import mongo
 
 # db = mongo.login
@@ -42,32 +44,36 @@ def logout(session):
 
 @app.route('/register')
 @views('login/register.html')
+@csrf_token
 def register():
-    return {}
+    
+    return {'token': request.csrf_token}
 
 
 @app.route('/register', method='POST')
 @views('login/register.html')
+@csrf_protect
+@csrf_token
 def do_register(db):
     username = request.forms.get('username')
-    usuario_exist = db.query(User).filter_by(username=username).first()
-    if usuario_exist:
-        return {'message': 'Usuário exite.', 'code': 'danger'}
-    
     first_name = request.forms.get('first_name')
     last_name = request.forms.get('last_name')
     email = request.forms.get('email')
     password = request.forms.get('password')
     confirma_password = request.forms.get('confirma_password')
+
+    error = required_field(request.forms,
+            ['first_name', 'last_name', 'username', 'email', 'password'])
+
+    if error:
+        return {'error': error, 'code': 'danger', 'token': request.csrf_token}
+
+
+    usuario_exist = db.query(User).filter_by(username=username).first()
+    if usuario_exist:
+        return {'message': 'Usuário exite.', 'code': 'danger', 'token': request.csrf_token}
+
     salt = bcrypt.gensalt(8)
-    data = {
-        'first_name': first_name,
-        'last_name': last_name,
-        'username': username,
-        'email': email,
-        'hashed': bcrypt.hashpw(str.encode(password), salt),
-        'salt': str(salt, 'utf-8')
-    }
     user = User(
             first_name=first_name,
             last_name=last_name,
@@ -77,4 +83,4 @@ def do_register(db):
             salt=str(salt, 'utf-8')
         )
     db.add(user)
-    return {'message': 'Usuário registrado com sucesso.', 'code': 'success'}
+    return {'message': 'Usuário registrado com sucesso.', 'code': 'success', 'token': request.csrf_token}

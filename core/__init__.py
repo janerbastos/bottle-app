@@ -9,9 +9,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-
 print('\nInicializando modolo principal da aplicação')
 app = Bottle()
+app.config.load_config('settings.conf')
 
 # print('Inicializando da conexão com mongo')
 # mongo = Database().connect()

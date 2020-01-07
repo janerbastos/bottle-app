@@ -4,11 +4,13 @@
 {% endblock %}
 {% block base %}
 <div id="login">
+  
   {% if message %}
   <div class="alert alert-success" role="alert">
     {{ message }}
   </div>
   {% endif %}
+
   <div class="container">
     <div id="login-row" class="row justify-content-center align-items-center">
       <div id="login-column" class="col-md-6">
