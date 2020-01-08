@@ -1,4 +1,4 @@
-
+import bcrypt
 from sqlalchemy import Column, Integer, String, Sequence, Boolean, DateTime
 from datetime import datetime
 from core import Base
@@ -22,15 +22,21 @@ class User(Base):
     date_joined = Column(DateTime, default=datetime.utcnow())
     last_login = Column(DateTime)
 
-    def __init__(self, first_name, last_name, username, email, hashed, salt, active=True):
+
+    def gerar_hashed(self, password):
+        salt = bcrypt.gensalt(8)
+        self.salt = str(salt, 'utf-8')
+        self.hashed = bcrypt.hashpw(str.encode(password), salt)
+
+    def __init__(self, first_name, last_name, username, email, password=None, active=True):
         self.first_name = first_name
         self.last_name = last_name
         self.username = username
         self.email = email
-        self.hashed = hashed
-        self.salt = salt
         self.is_active = active
-
+        if password:
+            self.gerar_hashed(password)
+            
     def to_json(self):
         return {
             'id': self.id,

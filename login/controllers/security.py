@@ -1,6 +1,6 @@
 import bcrypt
 from core import app, views
-from core.forms.validate.form import required_field
+from core.forms.validate.form import required_field, Form
 from bottle import redirect, request
 from bson.json_util import dumps
 from login.models.auth import User
@@ -55,12 +55,12 @@ def register():
 @csrf_protect
 @csrf_token
 def do_register(db):
+    
     username = request.forms.get('username')
-    first_name = request.forms.get('first_name')
-    last_name = request.forms.get('last_name')
-    email = request.forms.get('email')
-    password = request.forms.get('password')
     confirma_password = request.forms.get('confirma_password')
+
+    for key, value in request.forms.items():
+        print(key, ' -> ', value)
 
     error = required_field(request.forms,
             ['first_name', 'last_name', 'username', 'email', 'password'])
@@ -73,14 +73,8 @@ def do_register(db):
     if usuario_exist:
         return {'message': 'Usuário exite.', 'code': 'danger', 'token': request.csrf_token}
 
-    salt = bcrypt.gensalt(8)
-    user = User(
-            first_name=first_name,
-            last_name=last_name,
-            username=username,
-            email=email,
-            hashed=bcrypt.hashpw(str.encode(password), salt),
-            salt=str(salt, 'utf-8')
-        )
+    form = Form(request.forms, User)
+    user = form.save(['first_name', 'last_name', 'username', 'email', 'password'])
+
     db.add(user)
     return {'message': 'Usuário registrado com sucesso.', 'code': 'success', 'token': request.csrf_token}
