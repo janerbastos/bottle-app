@@ -21,10 +21,15 @@ class Form(object):
         pass
 
 
-def required_field(form, requiride):
-    messages = {}
-    for field in requiride:
+def required_field(form, required):
+    result = {'error': None, 'data': None}
+    data = {}
+    message = {}
+    for field in required:
         value = form.get(field)
         if value is "" or value is None:
-            messages[field] = "Você deve inserir um valor para <strong>%s</strong> no formulário" % field
-    return messages
+            message[field] = "Você deve inserir um valor para <strong>%s</strong> no formulário" % field
+        data[field] = value
+    result['data'] = data
+    result['error'] = message
+    return result

@@ -3,8 +3,6 @@ from sqlalchemy import Column, Integer, String, Sequence, Boolean, DateTime
 from datetime import datetime
 from core import Base
 
-
-
 class User(Base):
     
     __tablename__ = 'auth'
@@ -50,6 +48,11 @@ class User(Base):
             'date_joined': str(self.date_joined),
             'last_login': str(self.last_login) if self.last_login else ''
         }
+
+    def check_password(self, password):
+        salt = str.encode(self.salt)
+        hashed = bcrypt.hashpw(str.encode(password), salt)
+        return True if hashed == self.hashed else False
 
     def __repr__(self):
         return "<User(username='%s', email='%s')>" % (self.username, self.email)
