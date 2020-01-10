@@ -1,14 +1,14 @@
 
 from core import app, views
 from core.forms.validate.form import required_field, Form
-from bottle import redirect, request
-from bson.json_util import dumps
+from bottle import redirect, request, response
 from login.models.auth import User
 from bottle_utils.csrf import csrf_protect, csrf_token, csrf_tag
 from sqlite3 import IntegrityError
 # from core import mongo
 
-import datetime
+import datetime, json
+
 
 # db = mongo.login
 
@@ -16,10 +16,7 @@ import datetime
 @app.route('/<acesso>')
 @views('login/login.html')
 def login(acesso=True):
-    data = {'message': None}
-    code = request.params.get('code')
-    if code == '403':
-        data['message'] = 'Acesso não autorizado'
+    data = request.message if request.message else {'message': None, 'code': None}
     return data
 
 
@@ -32,16 +29,17 @@ def do_login(db, session):
     if usuario:
         result = usuario.check_password(password)
         if result:
-            session['user'] = dumps(usuario.to_json())
+            session['user'] = json.dumps(usuario.to_json())
             usuario.last_login = datetime.datetime.utcnow()
             db.add(usuario)
             return redirect('/blog')
-    return {'message': 'Usuário ou senha podem esta errados.'}
+    return {'message': 'Usuário ou senha podem esta errados.', 'code': 'warning'}
 
 @app.route('/logout')
 def logout(session):
     if session.get('user'):
         session.destroy()
+    response.flash({'message': 'Sessão encerrada com sucesso', 'code': 'success'})
     return redirect('login')
 
 

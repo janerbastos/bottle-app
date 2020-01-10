@@ -6,8 +6,8 @@
 <div id="login">
   
   {% if message %}
-  <div class="alert alert-success" role="alert">
-    {{ message }}
+  <div class="alert alert-{{ code }}" role="alert">
+    {{ message }} as
   </div>
   {% endif %}
 

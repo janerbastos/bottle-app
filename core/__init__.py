@@ -4,6 +4,7 @@ from bottle import Bottle, jinja2_view
 from bottle.ext import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from bottle_utils.flash import message_plugin
 
 #from core.connections.mongo_db import Database
 
@@ -26,6 +27,9 @@ views = functools.partial(jinja2_view, template_lookup=['templates'])
 print('Inicializando plugin Bottle Session')
 plugin_session = bottle_session.SessionPlugin(cookie_lifetime=120, host='localhost', password='Redis2019!')
 app.install(plugin_session)
+
+print('Inicializando serviço de mensagem flash')
+app.install(message_plugin)
 
 print('Inicializando plugin SQLAlchemy')
 plugin_sqlalchemy = sqlalchemy.Plugin(

@@ -1,5 +1,5 @@
 from core import app, views
-from bottle import template, response
+from bottle import template, response, redirect
 import json
 
 
@@ -15,6 +15,8 @@ def home(session):
         }
         return data
     else:
-        response.status = 303
-        response.set_header('location', '/?code=403')
-        return {}
+        response.flash({'message': 'Usuário não autorizado', 'code': 'danger'})
+        return redirect('/')
+        # response.status = 303
+        # response.set_header('location', '/?code=403')
+        # return {}
