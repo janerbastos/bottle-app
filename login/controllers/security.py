@@ -1,5 +1,6 @@
 
 from core import app, views
+from core.decorators import login_required
 from core.forms.validate.form import required_field, Form
 from bottle import redirect, request, response
 from login.models.auth import User
@@ -36,6 +37,7 @@ def do_login(db, session):
     return {'message': 'Usuário ou senha podem esta errados.', 'code': 'warning'}
 
 @app.route('/logout')
+@login_required
 def logout(session):
     if session.get('user'):
         session.destroy()
