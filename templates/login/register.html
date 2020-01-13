@@ -27,11 +27,11 @@
                 name="username"
                 id="username"
                 class="form-control"
-                value="{%if data.username %}{{ data.username }}{% endif %}"
+                value="{%if form.data.username %}{{ form.data.username }}{% endif %}"
                 />
-              {% if error.username %}
+              {% if form.errors.username %}
               <small id="helpusername" class="form-text text-danger">
-                {{error.username}}
+                {{form.errors.username}}
               </small>
               {% endif %}
             </div>
@@ -46,12 +46,12 @@
                   name="email"
                   id="email"
                   class="form-control"
-                  value="{%if data.email %}{{ data.email }}{% endif %}"
+                  value="{%if form.data.email %}{{ form.data.email }}{% endif %}"
                 />
               </div>
-              {% if error.email %}
+              {% if form.errors.email %}
               <small id="helpemail" class="form-text text-danger">
-                {{error.email}}
+                {{form.errors.email}}
               </small>
               {% endif %}
             </div>
@@ -62,11 +62,11 @@
                 name="first_name"
                 id="first_name"
                 class="form-control"
-                value="{%if data.first_name %}{{data.first_name}}{% endif %}"
+                value="{%if form.data.first_name %}{{form.data.first_name}}{% endif %}"
               />
-              {% if error.first_name %}
+              {% if form.errors.first_name %}
               <small id="helpfirst-name" class="form-text text-danger">
-                {{error.first_name}}
+                {{form.errors.first_name}}
               </small>
               {% endif %}
             </div>
@@ -77,11 +77,11 @@
                 name="last_name"
                 id="last_name"
                 class="form-control"
-                value="{%if data.last_name %}{{data.last_name}}{% endif %}"
+                value="{%if form.data.last_name %}{{form.data.last_name}}{% endif %}"
               />
-              {% if error.last_name %}
+              {% if form.errors.last_name %}
               <small class="form-text text-danger">
-                {{error.last_name}}
+                {{form.errors.last_name}}
               </small>
               {% endif %}
             </div>
@@ -93,9 +93,9 @@
                 id="password"
                 class="form-control"
               />
-              {% if error.password %}
+              {% if form.errors.password %}
               <small class="form-text text-danger">
-                {{error.password}}
+                {{form.errors.password}}
               </small>
               {% endif %}
             </div>

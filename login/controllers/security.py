@@ -6,7 +6,6 @@ from core.forms.validate.form import required_field
 from bottle import redirect, request, response
 from login.models.auth import User
 from bottle_utils.csrf import csrf_protect, csrf_token, csrf_tag
-from sqlite3 import IntegrityError
 # from core import mongo
 
 import datetime, json
@@ -51,10 +50,10 @@ def logout(session):
 @views('login/register.html')
 @csrf_token
 def register():
-    data = {
-        'first_name': None, 'last_name': None, 'username': None, 'email': None, 'password': None
-    }
-    return {'token': request.csrf_token, 'data': data, 'error': None}
+    form = LoginForm(request.forms or None, User)
+    data = request.message if request.message else {'message': None, 'code': None}
+    data.update({'token': request.csrf_token, 'form': form, })
+    return data
 
 
 @app.route('/register', method='POST')
@@ -65,26 +64,25 @@ def do_register(db):
     
     confirma_password = request.forms.get('confirma_password')
     form = LoginForm(request.forms, User)
+    token = request.csrf_token
     
-    # result = required_field(request.forms,
-    #         ['first_name', 'last_name', 'username', 'email', 'password'])
-    # if result.get('error'):
-    #     return {'error': result.get('error'), 'data': result.get('data'), 'code': 'danger', 'token': request.csrf_token}
+    usuario_exist = db.query(User).filter_by(username=form.data.get('username')).first()
+    if usuario_exist:
+        return {'form': form, 'message': 'Usuário exite.', 'code': 'danger', 'token': token}
+
+    email_exist = db.query(User).filter_by(email=form.data.get('email')).first()
+    if email_exist:
+        return {'form': form, 'message': 'Email já esta sendo usado.', 'code': 'danger', 'token': token}
 
     if form.is_valid():
-        usuario_exist = db.query(User).filter_by(username=form.data.get('username').first()
-        if usuario_exist:
-            return {'error': result.get('error'), 'data': result.get('data'), 'message': 'Usuário exite.', 'code': 'danger', 'token': request.csrf_token}
 
-        user = form.save()
+        user = form.to_model()
+
         if not user.check_password(confirma_password):
-            return {'error': result.get('error'), 'data': result.get('data'),'message': 'Senha não confirma.', 'code': 'danger', 'token': request.csrf_token}
+            return {'form': form, 'message': 'Senha não confirma.', 'code': 'danger', 'token': token}
 
-        usuario_email_exist = db.query(User).filter_by(email=user.email).first()
-        if usuario_email_exist:
-            return {'error': result.get('error'), 'data': result.get('data'),
-                'message': 'Email de usuário já esta sendo usado por outro usuário.', 'code': 'danger', 'token': request.csrf_token}
-        
         db.add(user)
+        response.flash({'message': 'Usuário registrado com sucesso', 'code': 'success'})
+        return redirect('/register')
 
-    return {'data': None, 'error': None, 'message': 'Usuário registrado com sucesso.', 'code': 'success', 'token': request.csrf_token}
+    return {'form': form, 'message': 'Corrija os erros e tente novamente', 'code': 'danger', 'token': token}

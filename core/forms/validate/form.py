@@ -3,18 +3,21 @@ class Form(object):
     fields = []
 
     def __init__(self, form, Class, instance=None):
-        self.form = form
         self.instance = instance
         self.Class = Class
-        self.errors = None
-        self.data = None
-
-    def load_data(self):
+        self.errors = {}
         self.data = {}
-        for field in self.fields:
-            self.data[field] = self.form.get(field)
+        self.__load_data(form)
 
-    def save(self):
+    def __load_data(self, form):
+        for field in self.fields:
+            if form:
+                aux = form.get(field)
+                self.data[field] = aux.strip() if aux is not None else aux
+            else:
+                self.data[field] = ''
+
+    def to_model(self):
         self.load_data()
         model = self.Class(**self.data)
         return model
@@ -22,13 +25,14 @@ class Form(object):
     def is_valid(self):
         self.errors = {}
         for field in self.fields:
-            value = self.form.get(field)
+            value = self.data.get(field)
             if value is "" or value is None:
                 self.errors[field] = "Você deve inserir um valor para <strong>%s</strong> no formulário" % field
             self.data[field] = value
         if self.errors:
             return False
         return True
+
 
 def required_field(form, required):
     result = {'error': None, 'data': None}
