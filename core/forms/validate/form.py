@@ -1,10 +1,10 @@
 class Form(object):
 
     fields = []
+    model = None
 
-    def __init__(self, form, Class, instance=None):
+    def __init__(self, form, instance=None):
         self.instance = instance
-        self.Class = Class
         self.errors = {}
         self.data = {}
         self.__load_data(form)
@@ -18,8 +18,7 @@ class Form(object):
                 self.data[field] = ''
 
     def to_model(self):
-        self.load_data()
-        model = self.Class(**self.data)
+        model = self.model(**self.data)
         return model
 
     def is_valid(self):

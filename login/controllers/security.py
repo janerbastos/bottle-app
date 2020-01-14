@@ -50,7 +50,7 @@ def logout(session):
 @views('login/register.html')
 @csrf_token
 def register():
-    form = LoginForm(request.forms or None, User)
+    form = LoginForm(request.forms or None)
     data = request.message if request.message else {'message': None, 'code': None}
     data.update({'token': request.csrf_token, 'form': form, })
     return data
@@ -63,7 +63,7 @@ def register():
 def do_register(db):
     
     confirma_password = request.forms.get('confirma_password')
-    form = LoginForm(request.forms, User)
+    form = LoginForm(request.forms)
     token = request.csrf_token
     
     usuario_exist = db.query(User).filter_by(username=form.data.get('username')).first()
@@ -77,10 +77,8 @@ def do_register(db):
     if form.is_valid():
 
         user = form.to_model()
-
         if not user.check_password(confirma_password):
             return {'form': form, 'message': 'Senha não confirma.', 'code': 'danger', 'token': token}
-
         db.add(user)
         response.flash({'message': 'Usuário registrado com sucesso', 'code': 'success'})
         return redirect('/register')
