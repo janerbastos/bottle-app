@@ -1,6 +1,6 @@
 
 from core import app, views
-from login.forns import LoginForm
+from login.forns import LoginForm, ChangePasswordForm
 from core.decorators import login_required
 from core.forms.validate.form import required_field
 from bottle import redirect, request, response
@@ -83,4 +83,37 @@ def do_register(db):
         response.flash({'message': 'Usuário registrado com sucesso', 'code': 'success'})
         return redirect('/register')
 
+    return {'form': form, 'message': 'Corrija os erros e tente novamente', 'code': 'danger', 'token': token}
+
+
+@app.route('/change_password')
+@views('login/change_password.html')
+@login_required
+@csrf_token
+def change_password(session):
+    form = ChangePasswordForm(request.forms or None)
+    data = request.message if request.message else {'message': None, 'code': None}
+    data.update({'token': request.csrf_token, 'form': form, })
+    return data
+
+
+@app.route('/change_password', method='POST')
+@views('login/change_password.html')
+@login_required
+@csrf_protect
+@csrf_token
+def do_change_password(db, session):
+    token = request.csrf_token
+    form = ChangePasswordForm(request.forms or None)
+    if form.is_valid():
+        user_session = json.loads(session.get('user'))
+        if form.data.get('new_password') == form.data.get('confirma_password'):
+            new_password = form.data.get('new_password')
+            user = db.query(User).filter_by(username=user_session.get('username')).first()
+            user.change_password(new_password)
+            db.add(user)
+            response.flash({'message': 'Senha auterada com sucesso', 'code': 'success'})
+            return redirect('/change_password')
+        else:
+            return {'form': form, 'message': 'Senha não confirma', 'code': 'warning', 'token': token}
     return {'form': form, 'message': 'Corrija os erros e tente novamente', 'code': 'danger', 'token': token}

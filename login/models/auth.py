@@ -21,7 +21,7 @@ class User(Base):
     last_login = Column(DateTime)
 
 
-    def gerar_hashed(self, password):
+    def __gerar_hashed(self, password):
         salt = bcrypt.gensalt(8)
         self.salt = str(salt, 'utf-8')
         self.hashed = bcrypt.hashpw(str.encode(password), salt)
@@ -33,7 +33,7 @@ class User(Base):
         self.email = email
         self.is_active = active
         if password:
-            self.gerar_hashed(password)
+            self.__gerar_hashed(password)
             
     def to_json(self):
         return {
@@ -53,6 +53,9 @@ class User(Base):
         salt = str.encode(self.salt)
         hashed = bcrypt.hashpw(str.encode(password), salt)
         return True if hashed == self.hashed else False
+
+    def change_password(self, password):
+        self.__gerar_hashed(password)
 
     def __repr__(self):
         return "<User(username='%s', email='%s')>" % (self.username, self.email)
