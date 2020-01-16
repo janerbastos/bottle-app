@@ -25,8 +25,8 @@ print('Configutando template de aplicação')
 views = functools.partial(jinja2_view, template_lookup=['templates'])
 
 print('Inicializando plugin Bottle Session')
-# plugin_session = bottle_session.SessionPlugin(cookie_lifetime=120, host='localhost', password='Redis2019!')
-plugin_session = bottle_session.SessionPlugin(cookie_lifetime=120, host='192.168.99.100', password='Redis2019!')
+plugin_session = bottle_session.SessionPlugin(cookie_lifetime=120, host='localhost', password='Redis2019!')
+# plugin_session = bottle_session.SessionPlugin(cookie_lifetime=120, host='192.168.99.100', password='Redis2019!')
 app.install(plugin_session)
 
 print('Inicializando serviço de mensagem flash')

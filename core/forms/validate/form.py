@@ -1,6 +1,7 @@
 class Form(object):
 
     fields = []
+    validate={}
     model = None
 
     def __init__(self, form, instance=None):
@@ -25,9 +26,10 @@ class Form(object):
         self.errors = {}
         for field in self.fields:
             value = self.data.get(field)
-            if value is "" or value is None:
-                self.errors[field] = "Você deve inserir um valor para <strong>%s</strong> no formulário" % field
-            self.data[field] = value
+            if 'required' in self.validate.get(field):
+                if value is "" or value is None:
+                    self.errors[field] = "Você deve inserir um valor para <strong>%s</strong> no formulário" % field
+                self.data[field] = value
         if self.errors:
             return False
         return True
