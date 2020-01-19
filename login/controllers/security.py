@@ -2,7 +2,6 @@
 from core import app, views
 from login.forns import LoginForm, ChangePasswordForm
 from core.decorators import login_required
-from core.forms.validate.form import required_field
 from bottle import redirect, request, response
 from login.models.auth import User
 from bottle_utils.csrf import csrf_protect, csrf_token, csrf_tag

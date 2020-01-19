@@ -1,4 +1,4 @@
-from core.forms.validate.form import Form
+from core.forms.form import Form
 from login.models.auth import User
 class LoginForm(Form):
     model = User
